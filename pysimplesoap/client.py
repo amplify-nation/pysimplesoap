@@ -25,6 +25,7 @@ import copy
 import hashlib
 import logging
 import os
+from six import string_types
 import tempfile
 import warnings
 
@@ -229,7 +230,7 @@ class SoapClient(object):
                                         if not k.startswith('wsse:')])
         # always extract WS Security header and send it (backward compatible)
         if 'wsse:Security' in self.__headers and not self.plugins:
-            warnings.warn("Replace wsse:Security with UsernameToken plugin", 
+            warnings.warn("Replace wsse:Security with UsernameToken plugin",
                           DeprecationWarning)
             self.plugins.append(UsernameToken())
 
@@ -252,7 +253,7 @@ class SoapClient(object):
 
         # do pre-processing using plugins (i.e. WSSE signing)
         for plugin in self.plugins:
-            plugin.preprocess(self, request, method, args, kwargs, 
+            plugin.preprocess(self, request, method, args, kwargs,
                                     self.__headers, soap_uri)
 
         self.xml_request = request.as_xml()
@@ -264,7 +265,7 @@ class SoapClient(object):
 
         # do post-processing using plugins (i.e. WSSE signature verification)
         for plugin in self.plugins:
-            plugin.postprocess(self, response, method, args, kwargs, 
+            plugin.postprocess(self, response, method, args, kwargs,
                                      self.__headers, soap_uri)
 
         return response
@@ -780,7 +781,7 @@ class SoapClient(object):
         if cache:
             # make md5 hash of the url for caching...
             filename_pkl = '%s.pkl' % hashlib.md5(url).hexdigest()
-            if isinstance(cache, basestring):
+            if isinstance(cache, string_types):
                 filename_pkl = os.path.join(cache, filename_pkl)
             if os.path.exists(filename_pkl):
                 log.debug('Unpickle file %s' % (filename_pkl, ))
